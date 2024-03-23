@@ -6,7 +6,7 @@
 /*   By: tjerdnap <tjerdnap@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 15:14:34 by tjerdnap          #+#    #+#             */
-/*   Updated: 2024/03/16 17:17:49 by tjerdnap         ###   ########.fr       */
+/*   Updated: 2024/03/23 17:37:24 by tjerdnap         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ static char	*next_line_break(int fd, char *left_char, char *buffer)
 	while (byte_read > 0)
 	{
 		byte_read = read(fd, buffer, BUFFER_SIZE);
-		if (byte_read < 0)
+		if (byte_read == -1)
 		{
+			free(left_char);
 			return (NULL);
 		}
 		else if (byte_read == 0)
@@ -80,17 +81,13 @@ char	*get_next_line(int fd)
 	char		*line;
 	char		*buffer;
 
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	if (!left_char)
+		left_char = NULL;
 	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
 		return (NULL);
-	if (fd < 0 || BUFFER_SIZE <= 0)
-	{
-		free(buffer);
-		free(left_char);
-		buffer = NULL;
-		left_char = NULL;
-		return (NULL);
-	}
 	line = next_line_break(fd, left_char, buffer);
 	free(buffer);
 	buffer = NULL;
